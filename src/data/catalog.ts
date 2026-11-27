@@ -108,8 +108,8 @@ export const PRODUCTS: Product[] = [
       'Buzo con cierre metálico pesado en rojo carmesí con parches de estrellas negras en capucha. Caída boxy con cintura estructurada.',
     sizes: ['S', 'M', 'L', 'XL'],
     images: [
-      '/src/assets/images/flatlay_animal_red_1795728618450.jpg',
-      '/src/assets/images/look_animal_red_color_1795728614960.jpg',
+      './src/assets/images/flatlay_animal_red_1795728618450.jpg',
+      './src/assets/images/look_animal_red_color_1795728614960.jpg',
     ],
     viewLabels: ['Flat-lay', 'Puesto'],
     measures: [
@@ -134,8 +134,8 @@ export const PRODUCTS: Product[] = [
       'El clásico Baggy Camu del local. Pierna ultra ancha con bolsillos cargo y caída recta sobre zapatilla. Disponible en 3 tonos camo.',
     sizes: ['S', 'M', 'L', 'XL'],
     images: [
-      '/src/assets/images/prod_baggy_camu_trio_1795728619994.jpg',
-      '/src/assets/images/look_camo_baggy_color_1795728616429.jpg',
+      './src/assets/images/prod_baggy_camu_trio_1795728619994.jpg',
+      './src/assets/images/look_camo_baggy_color_1795728616429.jpg',
     ],
     viewLabels: ['Flat-lay', 'Puesto'],
     measures: [
@@ -160,8 +160,8 @@ export const PRODUCTS: Product[] = [
       'Buzo cuello redondo pre-lavado carbón con estrellas bordadas a lo largo de ambas mangas. Hombro caído y puño firme.',
     sizes: ['S', 'M', 'L', 'XL'],
     images: [
-      '/src/assets/images/flatlay_endless_denim_1795728619698.jpg',
-      '/src/assets/images/look_endless_denim_color_1795728615723.jpg',
+      './src/assets/images/flatlay_endless_denim_1795728619698.jpg',
+      './src/assets/images/look_endless_denim_color_1795728615723.jpg',
     ],
     viewLabels: ['Flat-lay', 'Puesto'],
     measures: [
@@ -186,8 +186,8 @@ export const PRODUCTS: Product[] = [
       'Bermuda ancha debajo de la rodilla en camo woodland, bolsillos cargo laterales y calce holgado ideal con medias altas.',
     sizes: ['S', 'M', 'L', 'XL'],
     images: [
-      '/src/assets/images/prod_bermuda_camo_jort_1795728623121.jpg',
-      '/src/assets/images/community_mirror_rug_1795728623814.jpg',
+      './src/assets/images/prod_bermuda_camo_jort_1795728623121.jpg',
+      './src/assets/images/community_mirror_rug_1795728623814.jpg',
     ],
     viewLabels: ['Flat-lay', 'En local'],
     measures: [
@@ -212,8 +212,8 @@ export const PRODUCTS: Product[] = [
       'Corte cuadrado ancho en blanco tiza con sisa amplia y gráfica editorial en pecho. Calce liviano pero con cuerpo.',
     sizes: ['S', 'M', 'L', 'XL'],
     images: [
-      '/src/assets/images/look_fresco_plaid_color_1795728617591.jpg',
-      '/src/assets/images/flatlay_camo_street_1795728619655.jpg',
+      './src/assets/images/look_fresco_plaid_color_1795728617591.jpg',
+      './src/assets/images/flatlay_camo_street_1795728619655.jpg',
     ],
     viewLabels: ['Puesto', 'Flat-lay'],
     measures: [
@@ -237,8 +237,8 @@ export const PRODUCTS: Product[] = [
       'Pantalón ancho a cuadros en tonos tierra y oliva con caída fluida recta. Combina directo con boxy tees y zapatillas bajas.',
     sizes: ['S', 'M', 'L', 'XL'],
     images: [
-      '/src/assets/images/look_fresco_plaid_color_1795728617591.jpg',
-      '/src/assets/images/community_grid_wall_1795728626607.jpg',
+      './src/assets/images/look_fresco_plaid_color_1795728617591.jpg',
+      './src/assets/images/community_grid_wall_1795728626607.jpg',
     ],
     viewLabels: ['Puesto', 'En local'],
     measures: [
@@ -263,8 +263,8 @@ export const PRODUCTS: Product[] = [
       'Cuello rib 2.5cm bien cerrado que no cede. Largo contenido y ancho generoso para caída cuadrada limpia sobre baggys.',
     sizes: ['S', 'M', 'L', 'XL'],
     images: [
-      '/src/assets/images/flatlay_camo_street_1795728619655.jpg',
-      '/src/assets/images/look_camo_baggy_color_1795728616429.jpg',
+      './src/assets/images/flatlay_camo_street_1795728619655.jpg',
+      './src/assets/images/look_camo_baggy_color_1795728616429.jpg',
     ],
     viewLabels: ['Flat-lay', 'Puesto'],
     measures: [
@@ -288,8 +288,8 @@ export const PRODUCTS: Product[] = [
       'Jean 5 bolsillos de pierna ancha en denim azul lavado con caída limpia sobre el empeine. El básico de todos los outfits OSSK.',
     sizes: ['S', 'M', 'L', 'XL'],
     images: [
-      '/src/assets/images/flatlay_endless_denim_1795728619698.jpg',
-      '/src/assets/images/look_endless_denim_color_1795728615723.jpg',
+      './src/assets/images/flatlay_endless_denim_1795728619698.jpg',
+      './src/assets/images/look_endless_denim_color_1795728615723.jpg',
     ],
     viewLabels: ['Flat-lay', 'Puesto'],
     measures: [
@@ -313,8 +313,8 @@ export const PRODUCTS: Product[] = [
       'Hombro caído, capucha doble sin cordón y puños elastizados de alto gramaje. Estructura firme en negro tinta.',
     sizes: ['S', 'M', 'L', 'XL'],
     images: [
-      '/src/assets/images/prod_hoodie_asfalto_1795726327738.jpg',
-      '/src/assets/images/look_asfalto_nocturno_1795726320769.jpg',
+      './src/assets/images/prod_hoodie_asfalto_1795726327738.jpg',
+      './src/assets/images/look_asfalto_nocturno_1795726320769.jpg',
     ],
     viewLabels: ['Estudio', 'Puesto'],
     measures: [
@@ -339,8 +339,8 @@ export const PRODUCTS: Product[] = [
       'Chaqueta estructurada con bolsillos frontales utilitarios y lavado enzimático sutil. Edición limitada en Rodríguez 743.',
     sizes: ['S', 'M', 'L', 'XL'],
     images: [
-      '/src/assets/images/prod_campera_denim_1795726331506.jpg',
-      '/src/assets/images/look_workwear_743_1795726322482.jpg',
+      './src/assets/images/prod_campera_denim_1795726331506.jpg',
+      './src/assets/images/look_workwear_743_1795726322482.jpg',
     ],
     viewLabels: ['Estudio', 'Puesto'],
     measures: [
@@ -364,8 +364,8 @@ export const PRODUCTS: Product[] = [
       'Gorra 6 paneles sin estructura rígida, visera curva pre-formada y calce bajo. Ideal para cerrar cualquier combo con 10% OFF.',
     sizes: ['U'],
     images: [
-      '/src/assets/images/prod_cap_6panel_1795726332947.jpg',
-      '/src/assets/images/flatlay_camo_street_1795728619655.jpg',
+      './src/assets/images/prod_cap_6panel_1795726332947.jpg',
+      './src/assets/images/flatlay_camo_street_1795728619655.jpg',
     ],
     viewLabels: ['Estudio', 'Flat-lay'],
     measures: [{ s: 'U', w: 58, l: 12 }],
@@ -385,8 +385,8 @@ export const PRODUCTS: Product[] = [
       'Pack x3 (blanco, carbón y melange) con doble raya en rojo OSSK. Sumalas a 2 prendas para destrabar el 10% OFF en combo.',
     sizes: ['U'],
     images: [
-      '/src/assets/images/prod_medias_ossk_1795728623900.jpg',
-      '/src/assets/images/flatlay_animal_red_1795728618450.jpg',
+      './src/assets/images/prod_medias_ossk_1795728623900.jpg',
+      './src/assets/images/flatlay_animal_red_1795728618450.jpg',
     ],
     viewLabels: ['Flat-lay', 'En outfit'],
     measures: [{ s: 'U', w: 39, l: 44 }],
@@ -397,8 +397,8 @@ export const RUNWAY_LOOKS: RunwayLook[] = [
   {
     name: 'Animal Rojo',
     dropLabel: 'DROP · ANIMAL × OSSK',
-    image: '/src/assets/images/look_animal_red_color_1795728614960.jpg',
-    flatlayImage: '/src/assets/images/flatlay_animal_red_1795728618450.jpg',
+    image: './src/assets/images/look_animal_red_color_1795728614960.jpg',
+    flatlayImage: './src/assets/images/flatlay_animal_red_1795728618450.jpg',
     pieces: [
       {
         productId: 'zip-animal-red',
@@ -433,8 +433,8 @@ export const RUNWAY_LOOKS: RunwayLook[] = [
   {
     name: 'Camu Street',
     dropLabel: 'OSSK VOL.1 · BAGGYS CAMU',
-    image: '/src/assets/images/look_camo_baggy_color_1795728616429.jpg',
-    flatlayImage: '/src/assets/images/flatlay_camo_street_1795728619655.jpg',
+    image: './src/assets/images/look_camo_baggy_color_1795728616429.jpg',
+    flatlayImage: './src/assets/images/flatlay_camo_street_1795728619655.jpg',
     pieces: [
       {
         productId: 'remera-boxy-240',
@@ -469,8 +469,8 @@ export const RUNWAY_LOOKS: RunwayLook[] = [
   {
     name: 'Endless Stars',
     dropLabel: 'ENDLESS SUMMER × DENIM',
-    image: '/src/assets/images/look_endless_denim_color_1795728615723.jpg',
-    flatlayImage: '/src/assets/images/flatlay_endless_denim_1795728619698.jpg',
+    image: './src/assets/images/look_endless_denim_color_1795728615723.jpg',
+    flatlayImage: './src/assets/images/flatlay_endless_denim_1795728619698.jpg',
     pieces: [
       {
         productId: 'crew-endless-stars',
@@ -505,8 +505,8 @@ export const RUNWAY_LOOKS: RunwayLook[] = [
   {
     name: 'Fresco Plaid',
     dropLabel: 'FRESCO · ARCHIVE',
-    image: '/src/assets/images/look_fresco_plaid_color_1795728617591.jpg',
-    flatlayImage: '/src/assets/images/community_grid_wall_1795728626607.jpg',
+    image: './src/assets/images/look_fresco_plaid_color_1795728617591.jpg',
+    flatlayImage: './src/assets/images/community_grid_wall_1795728626607.jpg',
     pieces: [
       {
         productId: 'remera-fresco-sleeveless',
@@ -540,8 +540,8 @@ export const RUNWAY_LOOKS: RunwayLook[] = [
   {
     name: 'Workwear 743',
     dropLabel: 'OSSK DENIM · LIMITED',
-    image: '/src/assets/images/look_workwear_743_1795726322482.jpg',
-    flatlayImage: '/src/assets/images/flatlay_camo_street_1795728619655.jpg',
+    image: './src/assets/images/look_workwear_743_1795726322482.jpg',
+    flatlayImage: './src/assets/images/flatlay_camo_street_1795728619655.jpg',
     pieces: [
       {
         productId: 'campera-denim-raw',
@@ -576,8 +576,8 @@ export const RUNWAY_LOOKS: RunwayLook[] = [
   {
     name: 'Asfalto 420',
     dropLabel: 'OSSK VOL.1 · CORE',
-    image: '/src/assets/images/look_asfalto_nocturno_1795726320769.jpg',
-    flatlayImage: '/src/assets/images/flatlay_endless_denim_1795728619698.jpg',
+    image: './src/assets/images/look_asfalto_nocturno_1795726320769.jpg',
+    flatlayImage: './src/assets/images/flatlay_endless_denim_1795728619698.jpg',
     pieces: [
       {
         productId: 'hoodie-asfalto-420',
@@ -616,7 +616,7 @@ export const COMMUNITY_POSTS: CommunityPost[] = [
     tag: 'PROBADOR · RODRÍGUEZ 743',
     title: 'Fit-check en la alfombra OSSK',
     caption: 'Bermuda Camo Jort + Medias Crew en el espejo del local.',
-    image: '/src/assets/images/community_mirror_rug_1795728623814.jpg',
+    image: './src/assets/images/community_mirror_rug_1795728623814.jpg',
     actionLabel: 'Ver Bermuda Camo',
     actionType: 'loupe',
     targetId: 'bermuda-camo-jort',
@@ -626,7 +626,7 @@ export const COMMUNITY_POSTS: CommunityPost[] = [
     tag: 'MURO GRID · LOOK DEL DÍA',
     title: 'Curaduría en el local',
     caption: 'Baggys Camu Arena + tejido pesado armados directo en la pared.',
-    image: '/src/assets/images/community_grid_wall_1795728626607.jpg',
+    image: './src/assets/images/community_grid_wall_1795728626607.jpg',
     actionLabel: 'Ver Baggy Camu',
     actionType: 'loupe',
     targetId: 'baggy-camu-trio',
@@ -636,7 +636,7 @@ export const COMMUNITY_POSTS: CommunityPost[] = [
     tag: 'OUTFIT OSSK · FLAT-LAY',
     title: 'Animal Stars + Jean Baggy',
     caption: 'El combo rojo insignia sobre piso de cemento. 10% OFF llevando las 3.',
-    image: '/src/assets/images/flatlay_animal_red_1795728618450.jpg',
+    image: './src/assets/images/flatlay_animal_red_1795728618450.jpg',
     actionLabel: 'Probar Look 01',
     actionType: 'runway',
     targetId: 0,
@@ -646,7 +646,7 @@ export const COMMUNITY_POSTS: CommunityPost[] = [
     tag: 'STYLEANDO · DROP CAMU',
     title: 'Boxy Ink + Baggy Woodland',
     caption: 'Base negra 240g, camo ancho, gorra lavada y medias crew.',
-    image: '/src/assets/images/flatlay_camo_street_1795728619655.jpg',
+    image: './src/assets/images/flatlay_camo_street_1795728619655.jpg',
     actionLabel: 'Probar Look 02',
     actionType: 'runway',
     targetId: 1,
