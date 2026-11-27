@@ -4,6 +4,7 @@ import {
   computeNormalizedModelTransform,
   isValidGlbFileName,
   resolveProductModelSource,
+  toggleLoupeViewMode,
 } from './garment3dLogic';
 
 test('isValidGlbFileName validates .glb and .gltf extensions case-insensitively and rejects unsupported files', () => {
@@ -59,4 +60,9 @@ test('resolveProductModelSource returns null when no real GLB exists and priorit
     label: 'polycam-hoodie.glb',
     isCustomUpload: true,
   });
+});
+
+test('toggleLoupeViewMode alternates cleanly between 2d and 3d modes', () => {
+  assert.equal(toggleLoupeViewMode('2d'), '3d');
+  assert.equal(toggleLoupeViewMode('3d'), '2d');
 });

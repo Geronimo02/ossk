@@ -9,8 +9,9 @@ import { computeNormalizedModelTransform, isValidGlbFileName } from '../utils/ga
 import { soundEngine } from '../utils/soundEngine';
 
 interface GarmentStudio3DProps {
-  modelUrl: string;
-  modelLabel: string;
+  modelUrl: string | null;
+  modelLabel: string | null;
+  productName: string;
   isCustomUpload?: boolean;
   onUploadFile: (file: File) => void;
   onClearCustom?: () => void;
@@ -37,7 +38,7 @@ function createTurntableTexture(maxAnisotropy: number): THREE.CanvasTexture {
   const ctx = canvas.getContext('2d')!;
 
   const grad = ctx.createRadialGradient(256, 256, 20, 256, 256, 252);
-  grad.addColorStop(0, '#25252a');
+  grad.addColorStop(0, '#26262c');
   grad.addColorStop(0.74, '#17171b');
   grad.addColorStop(1, '#0e0e11');
   ctx.fillStyle = grad;
@@ -66,13 +67,144 @@ function createTurntableTexture(maxAnisotropy: number): THREE.CanvasTexture {
   return tex;
 }
 
+function createAtelierLinenTexture(maxAnisotropy: number): THREE.CanvasTexture {
+  const canvas = document.createElement('canvas');
+  canvas.width = 512;
+  canvas.height = 512;
+  const ctx = canvas.getContext('2d')!;
+
+  ctx.fillStyle = '#24252a';
+  ctx.fillRect(0, 0, 512, 512);
+
+  // Subtle woven dark atelier linen grain
+  for (let y = 0; y < 512; y += 3) {
+    ctx.fillStyle = y % 6 === 0 ? 'rgba(255,255,255,0.035)' : 'rgba(0,0,0,0.07)';
+    ctx.fillRect(0, y, 512, 1);
+  }
+  for (let x = 0; x < 512; x += 4) {
+    ctx.fillStyle = x % 8 === 0 ? 'rgba(255,255,255,0.025)' : 'rgba(0,0,0,0.05)';
+    ctx.fillRect(x, 0, 1, 512);
+  }
+
+  // Couture vertical princess-seam stitching & subtle crimson waist tape
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.16)';
+  ctx.lineWidth = 2;
+  ctx.setLineDash([6, 5]);
+  for (const sx of [128, 256, 384]) {
+    ctx.beginPath();
+    ctx.moveTo(sx, 0);
+    ctx.lineTo(sx, 512);
+    ctx.stroke();
+  }
+  ctx.setLineDash([]);
+
+  // Subtle architectural crimson waist measurement line
+  ctx.fillStyle = 'rgba(217, 30, 42, 0.65)';
+  ctx.fillRect(0, 355, 512, 4);
+
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.wrapS = THREE.RepeatWrapping;
+  tex.wrapT = THREE.ClampToEdgeWrapping;
+  tex.anisotropy = Math.min(8, maxAnisotropy);
+  return tex;
+}
+
 /**
- * Pure real-asset .GLB / .GLTF 360° studio viewer for Ossk Tandil.
- * Renders only real scanned/authored 3D assets on a calibrated PBR studio turntable.
+ * Minimalist sculptural obsidian atelier dress-form mannequin displayed when
+ * inspecting 360° 3D before a product-specific .GLB scan is loaded.
+ */
+function createAtelierMannequinBust(maxAnisotropy: number): THREE.Group {
+  const group = new THREE.Group();
+  const linenTex = createAtelierLinenTexture(maxAnisotropy);
+  const linenMat = new THREE.MeshStandardMaterial({
+    map: linenTex,
+    roughness: 0.88,
+    metalness: 0.05,
+  });
+  const titaniumMat = new THREE.MeshStandardMaterial({
+    color: 0xd4d8e0,
+    roughness: 0.24,
+    metalness: 0.88,
+  });
+  const ironMat = new THREE.MeshStandardMaterial({
+    color: 0x151518,
+    roughness: 0.42,
+    metalness: 0.75,
+  });
+
+  // Grounded weighted studio disc flange
+  const baseDisc = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.26, 0.045, 32), ironMat);
+  baseDisc.position.y = 0.0225;
+  group.add(baseDisc);
+
+  const baseCollar = new THREE.Mesh(new THREE.CylinderGeometry(0.075, 0.11, 0.055, 22), titaniumMat);
+  baseCollar.position.y = 0.065;
+  group.add(baseCollar);
+
+  // Vertical stand rod
+  const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.028, 0.034, 0.64, 18), ironMat);
+  pole.position.y = 0.39;
+  group.add(pole);
+
+  const bottomCap = new THREE.Mesh(new THREE.CylinderGeometry(0.075, 0.082, 0.05, 20), titaniumMat);
+  bottomCap.position.y = 0.72;
+  group.add(bottomCap);
+
+  // Sculpted couture torso silhouette (hip -> waist -> chest -> shoulders -> neck)
+  const pts = [
+    new THREE.Vector2(0.0, 0.74),
+    new THREE.Vector2(0.27, 0.75),
+    new THREE.Vector2(0.30, 0.88),
+    new THREE.Vector2(0.255, 1.07),
+    new THREE.Vector2(0.265, 1.2),
+    new THREE.Vector2(0.34, 1.42),
+    new THREE.Vector2(0.38, 1.57),
+    new THREE.Vector2(0.31, 1.66),
+    new THREE.Vector2(0.115, 1.72),
+    new THREE.Vector2(0.108, 1.88),
+    new THREE.Vector2(0.0, 1.89),
+  ];
+  const bustGeo = new THREE.LatheGeometry(pts, 44);
+  bustGeo.scale(1.16, 1, 0.72);
+  const bustMesh = new THREE.Mesh(bustGeo, linenMat);
+  bustMesh.castShadow = true;
+  bustMesh.receiveShadow = true;
+  group.add(bustMesh);
+
+  // Subtle recessed armhole plates on left & right shoulders
+  [-1, 1].forEach((side) => {
+    const armCap = new THREE.Mesh(new THREE.CylinderGeometry(0.115, 0.115, 0.03, 24), ironMat);
+    armCap.rotation.z = Math.PI / 2 - side * 0.16;
+    armCap.position.set(side * 0.435, 1.54, 0);
+    group.add(armCap);
+  });
+
+  // Brushed titanium neck finial
+  const neckCap = new THREE.Mesh(new THREE.CylinderGeometry(0.112, 0.114, 0.04, 28), titaniumMat);
+  neckCap.position.y = 1.905;
+  group.add(neckCap);
+
+  const neckStem = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.032, 0.055, 16), titaniumMat);
+  neckStem.position.y = 1.945;
+  group.add(neckStem);
+
+  const finialBall = new THREE.Mesh(new THREE.SphereGeometry(0.046, 20, 16), titaniumMat);
+  finialBall.position.y = 1.985;
+  group.add(finialBall);
+
+  return group;
+}
+
+/**
+ * 360° Three.js Studio Viewer with OrbitControls.
+ * Renders a loaded .GLB/.GLTF garment scan when present, or the sculptural atelier
+ * mannequin bust ready for 360° rotation and instant .GLB drag-and-drop.
  */
 export function GarmentStudio3D({
   modelUrl,
   modelLabel,
+  productName,
   isCustomUpload = false,
   onUploadFile,
   onClearCustom,
@@ -83,12 +215,11 @@ export function GarmentStudio3D({
   const controlsRef = useRef<OrbitControls | null>(null);
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
   const activeObjectRef = useRef<THREE.Object3D | null>(null);
-  const sceneRef = useRef<THREE.Scene | null>(null);
   const renderNowRef = useRef<(() => void) | null>(null);
 
   const [autoRotate, setAutoRotate] = useState(true);
   const [dragOver, setDragOver] = useState(false);
-  const [loadingGlb, setLoadingGlb] = useState(true);
+  const [loadingGlb, setLoadingGlb] = useState(Boolean(modelUrl));
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const autoRotateRef = useRef(true);
@@ -124,7 +255,6 @@ export function GarmentStudio3D({
     [onUploadFile]
   );
 
-  // Initialize isolated Three.js studio scene and load the real .GLB/.GLTF asset
   useEffect(() => {
     const container = mountRef.current;
     if (!container) return;
@@ -137,7 +267,7 @@ export function GarmentStudio3D({
     });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, isSoftwareGl ? 1 : 2));
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.02;
+    renderer.toneMappingExposure = 1.04;
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.shadowMap.enabled = !isSoftwareGl;
     if (!isSoftwareGl) {
@@ -157,7 +287,6 @@ export function GarmentStudio3D({
     const scene = new THREE.Scene();
     scene.background = new THREE.Color('#131316');
     scene.fog = new THREE.Fog('#131316', 7.5, 16);
-    sceneRef.current = scene;
 
     // RoomEnvironment PBR studio lighting on EVERY device
     const pmrem = new THREE.PMREMGenerator(renderer);
@@ -167,7 +296,7 @@ export function GarmentStudio3D({
     scene.environmentIntensity = 0.78;
     roomEnv.dispose();
 
-    const hemi = new THREE.HemisphereLight(0xf5f7fc, 0x201e1c, 0.58);
+    const hemi = new THREE.HemisphereLight(0xf5f7fc, 0x201e1c, 0.6);
     scene.add(hemi);
 
     const keyLight = new THREE.DirectionalLight(0xfff6ea, 1.75);
@@ -189,7 +318,7 @@ export function GarmentStudio3D({
     fillLight.position.set(-3.1, 2.2, 2.2);
     scene.add(fillLight);
 
-    const rimLight = new THREE.DirectionalLight(0xd91e2a, 0.45);
+    const rimLight = new THREE.DirectionalLight(0xd91e2a, 0.48);
     rimLight.position.set(-2.4, 2.9, -3.4);
     scene.add(rimLight);
 
@@ -208,11 +337,11 @@ export function GarmentStudio3D({
     scene.add(pedestal);
 
     const camera = new THREE.PerspectiveCamera(36, width / height, 0.1, 40);
-    camera.position.set(0.38, 1.32, 3.7);
+    camera.position.set(0.42, 1.32, 3.68);
     cameraRef.current = camera;
 
     const controls = new OrbitControls(camera, renderer.domElement);
-    controls.target.set(0, 0.96, 0);
+    controls.target.set(0, 0.98, 0);
     controls.enableDamping = true;
     controls.dampingFactor = 0.075;
     controls.enablePan = false;
@@ -221,7 +350,7 @@ export function GarmentStudio3D({
     controls.minPolarAngle = 0.22;
     controls.maxPolarAngle = Math.PI * 0.49;
     controls.autoRotate = autoRotateRef.current;
-    controls.autoRotateSpeed = 1.45;
+    controls.autoRotateSpeed = 1.4;
     controls.update();
     controlsRef.current = controls;
 
@@ -230,61 +359,74 @@ export function GarmentStudio3D({
       renderer.render(scene, camera);
     };
 
-    // Synchronous Frame 0 render of studio pedestal
+    const mountNormalizedObject = (obj: THREE.Object3D, targetHeight = 1.8) => {
+      if (activeObjectRef.current) {
+        scene.remove(activeObjectRef.current);
+        disposeObject(activeObjectRef.current);
+      }
+      const box = new THREE.Box3().setFromObject(obj);
+      const size = box.getSize(new THREE.Vector3());
+      const center = box.getCenter(new THREE.Vector3());
+      const tx = computeNormalizedModelTransform(size, center, box.min.y, targetHeight, 0.08);
+      obj.scale.multiplyScalar(tx.scale);
+      obj.position.set(tx.offsetX, tx.offsetY, tx.offsetZ);
+      scene.add(obj);
+      activeObjectRef.current = obj;
+    };
+
+    let disposed = false;
+
+    if (modelUrl) {
+      setLoadingGlb(true);
+      setErrorMsg(null);
+      const draco = new DRACOLoader();
+      draco.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.6/');
+      const loader = new GLTFLoader();
+      loader.setDRACOLoader(draco);
+
+      loader.load(
+        modelUrl,
+        (gltf) => {
+          if (disposed) {
+            disposeObject(gltf.scene);
+            draco.dispose();
+            return;
+          }
+          gltf.scene.traverse((child) => {
+            const mesh = child as THREE.Mesh;
+            if (mesh.isMesh) {
+              mesh.castShadow = true;
+              mesh.receiveShadow = true;
+            }
+          });
+          mountNormalizedObject(gltf.scene, 1.82);
+          setLoadingGlb(false);
+          renderNowRef.current?.();
+          soundEngine.playAdd();
+          draco.dispose();
+        },
+        undefined,
+        () => {
+          if (disposed) {
+            draco.dispose();
+            return;
+          }
+          setLoadingGlb(false);
+          setErrorMsg('No se pudo leer ese archivo .GLB. Mostrando maniquí base.');
+          mountNormalizedObject(createAtelierMannequinBust(maxAniso), 1.78);
+          renderNowRef.current?.();
+          draco.dispose();
+        }
+      );
+    } else {
+      setLoadingGlb(false);
+      setErrorMsg(null);
+      mountNormalizedObject(createAtelierMannequinBust(maxAniso), 1.78);
+    }
+
+    // Synchronous Frame 0 render
     controls.update();
     renderer.render(scene, camera);
-
-    // Load real .GLB / .GLTF asset
-    let disposed = false;
-    setLoadingGlb(true);
-    setErrorMsg(null);
-
-    const draco = new DRACOLoader();
-    draco.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.6/');
-    const loader = new GLTFLoader();
-    loader.setDRACOLoader(draco);
-
-    loader.load(
-      modelUrl,
-      (gltf) => {
-        if (disposed) {
-          disposeObject(gltf.scene);
-          draco.dispose();
-          return;
-        }
-        gltf.scene.traverse((child) => {
-          const mesh = child as THREE.Mesh;
-          if (mesh.isMesh) {
-            mesh.castShadow = true;
-            mesh.receiveShadow = true;
-          }
-        });
-
-        const box = new THREE.Box3().setFromObject(gltf.scene);
-        const size = box.getSize(new THREE.Vector3());
-        const center = box.getCenter(new THREE.Vector3());
-        const tx = computeNormalizedModelTransform(size, center, box.min.y, 1.82, 0.08);
-        gltf.scene.scale.multiplyScalar(tx.scale);
-        gltf.scene.position.set(tx.offsetX, tx.offsetY, tx.offsetZ);
-
-        scene.add(gltf.scene);
-        activeObjectRef.current = gltf.scene;
-        setLoadingGlb(false);
-        renderNowRef.current?.();
-        soundEngine.playAdd();
-        draco.dispose();
-      },
-      undefined,
-      () => {
-        if (disposed) {
-          draco.dispose();
-          return;
-        }
-        setLoadingGlb(false);
-        setErrorMsg('No se pudo leer ese archivo .GLB. Probá otro escaneo.');
-        draco.dispose();
-      }
-    );
 
     let rafId = 0;
     let timerId = 0;
@@ -364,8 +506,8 @@ export function GarmentStudio3D({
     const ctrls = controlsRef.current;
     if (!cam || !ctrls) return;
     setAutoRotate(false);
-    cam.position.set(0, 1.3, angle === 'front' ? 3.7 : -3.7);
-    ctrls.target.set(0, 0.96, 0);
+    cam.position.set(0, 1.3, angle === 'front' ? 3.68 : -3.68);
+    ctrls.target.set(0, 0.98, 0);
     ctrls.update();
     renderNowRef.current?.();
   };
@@ -373,6 +515,7 @@ export function GarmentStudio3D({
   return (
     <div
       data-testid="garment-studio-3d"
+      aria-label={`Visor 360° 3D de ${productName}`}
       className="relative w-full h-full bg-[#131316] select-none overflow-hidden"
       onDragOver={(e) => {
         e.preventDefault();
@@ -386,14 +529,16 @@ export function GarmentStudio3D({
         if (file) handleIncomingFile(file);
       }}
     >
-      {/* Isolated WebGL canvas mount */}
+      {/* Isolated WebGL OrbitControls canvas mount */}
       <div ref={mountRef} className="w-full h-full cursor-grab active:cursor-grabbing" />
 
-      {/* Top-left Real .GLB indicator */}
-      <div className="pointer-events-none absolute top-3 left-3 flex flex-col gap-1 max-w-[64%]">
+      {/* Top-left 360° indicator */}
+      <div className="pointer-events-none absolute top-3 left-3 flex flex-col gap-1 max-w-[66%]">
         <div className="px-2.5 py-1.5 bg-[#0a0a0a]/92 border border-white/20 font-mono-tech text-[9.5px] tracking-[0.13em] uppercase text-white flex items-center gap-1.5">
           <Box className="w-3.5 h-3.5 text-[#ff4d58] shrink-0" aria-hidden="true" />
-          <span className="truncate">3D · {modelLabel}</span>
+          <span className="truncate">
+            {modelLabel ? `360° · ${modelLabel}` : 'Maniquí 360° · Arrastrá o subí .GLB'}
+          </span>
         </div>
         {errorMsg && (
           <div className="px-2.5 py-1 bg-[#3a0d12] border border-[#d91e2a] font-mono-tech text-[10px] text-[#ffd4d7]">
@@ -402,7 +547,7 @@ export function GarmentStudio3D({
         )}
       </div>
 
-      {/* Top-right .GLB swap & clear */}
+      {/* Top-right .GLB scan upload / clear */}
       <div
         className="absolute top-3 right-3 flex items-center gap-1.5"
         onClick={(e) => e.stopPropagation()}
@@ -438,7 +583,7 @@ export function GarmentStudio3D({
               soundEngine.playPop();
               onClearCustom();
             }}
-            aria-label="Quitar vista previa .GLB"
+            aria-label="Volver al maniquí base"
             className="min-h-[30px] px-2 bg-[#0e0e11]/95 border border-white/22 text-[#d4d4d8] hover:text-white hover:border-white inline-flex items-center"
           >
             <RotateCcw className="w-3 h-3" aria-hidden="true" />
@@ -462,23 +607,23 @@ export function GarmentStudio3D({
         </div>
       )}
 
-      {/* Left-bottom compact camera controls */}
+      {/* Left-bottom OrbitControls camera presets & auto-rotate */}
       <div
         data-testid="studio-3d-controls"
-        className="absolute left-3 bottom-14 md:bottom-3 flex items-center gap-1"
+        className="absolute left-3 bottom-3 flex items-center gap-1"
         onClick={(e) => e.stopPropagation()}
       >
         <button
           type="button"
           onClick={() => setCameraAngle('front')}
-          className="min-h-[32px] px-2 bg-[#0e0e11]/95 border border-white/22 text-white font-mono-tech text-[9.5px] font-bold tracking-[0.08em] uppercase hover:border-white transition-colors"
+          className="min-h-[34px] px-2.5 bg-[#0e0e11]/95 border border-white/22 text-white font-mono-tech text-[9.5px] font-bold tracking-[0.08em] uppercase hover:border-white transition-colors"
         >
           Frente
         </button>
         <button
           type="button"
           onClick={() => setCameraAngle('back')}
-          className="min-h-[32px] px-2 bg-[#0e0e11]/95 border border-white/22 text-white font-mono-tech text-[9.5px] font-bold tracking-[0.08em] uppercase hover:border-white transition-colors"
+          className="min-h-[34px] px-2.5 bg-[#0e0e11]/95 border border-white/22 text-white font-mono-tech text-[9.5px] font-bold tracking-[0.08em] uppercase hover:border-white transition-colors"
         >
           Espalda
         </button>
@@ -490,7 +635,7 @@ export function GarmentStudio3D({
             setAutoRotate((v) => !v);
           }}
           aria-label={autoRotate ? 'Pausar giro 360' : 'Activar giro 360'}
-          className={`min-h-[32px] px-2 border font-mono-tech text-[9.5px] font-bold uppercase inline-flex items-center gap-1 transition-colors ${
+          className={`min-h-[34px] px-2.5 border font-mono-tech text-[9.5px] font-bold uppercase inline-flex items-center gap-1 transition-colors ${
             autoRotate
               ? 'bg-[#d91e2a] border-[#d91e2a] text-white'
               : 'bg-[#0e0e11]/95 border-white/22 text-white hover:border-white'

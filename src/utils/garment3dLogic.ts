@@ -1,3 +1,5 @@
+export type LoupeViewMode = '2d' | '3d';
+
 export interface Vec3Like {
   x: number;
   y: number;
@@ -48,7 +50,7 @@ export function computeNormalizedModelTransform(
 /**
  * Resolves the active real .GLB/.GLTF model source for a product.
  * Returns null when neither a catalog scan (product.modelUrl) nor a local test upload exists,
- * ensuring the storefront never renders synthetic placeholder 3D geometry.
+ * in which case GarmentStudio3D shows the sculptural studio tailor mannequin ready for 360° orbit or .GLB drop.
  */
 export function resolveProductModelSource(
   productModelUrl: string | undefined,
@@ -70,4 +72,9 @@ export function resolveProductModelSource(
     };
   }
   return null;
+}
+
+/** Toggles cleanly between 2D technical loupe and 360° Three.js OrbitControls inspection */
+export function toggleLoupeViewMode(current: LoupeViewMode): LoupeViewMode {
+  return current === '2d' ? '3d' : '2d';
 }

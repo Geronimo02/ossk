@@ -1,8 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Box, Upload, X } from 'lucide-react';
+import { Box, Image as ImageIcon, Upload, X } from 'lucide-react';
 import type { Product } from '../data/catalog';
 import { clamp, damp, formatArs } from '../utils/storeLogic';
-import { isValidGlbFileName, resolveProductModelSource } from '../utils/garment3dLogic';
+import {
+  type LoupeViewMode,
+  isValidGlbFileName,
+  resolveProductModelSource,
+  toggleLoupeViewMode,
+} from '../utils/garment3dLogic';
 import { soundEngine } from '../utils/soundEngine';
 import { GarmentStudio3D } from './GarmentStudio3D';
 
@@ -14,7 +19,7 @@ interface LoupeModalProps {
 
 export function LoupeModal({ product, onClose, onAdd }: LoupeModalProps) {
   const [imgIdx, setImgIdx] = useState(0);
-  const [viewMode, setViewMode] = useState<'image' | '3d'>('image');
+  const [viewMode, setViewMode] = useState<LoupeViewMode>('2d');
   const [selectedSize, setSelectedSize] = useState('M');
   const [mobileZoom, setMobileZoom] = useState(false);
   const [customGlb, setCustomGlb] = useState<{ url: string; name: string } | null>(null);
@@ -48,7 +53,7 @@ export function LoupeModal({ product, onClose, onAdd }: LoupeModalProps) {
   useEffect(() => {
     if (!product) return;
     setImgIdx(0);
-    setViewMode('image');
+    setViewMode('2d');
     setSelectedSize(product.sizes[Math.min(1, product.sizes.length - 1)]);
     setMobileZoom(false);
     setGlbError(null);
@@ -68,7 +73,7 @@ export function LoupeModal({ product, onClose, onAdd }: LoupeModalProps) {
   if (!product) return null;
 
   const activeModel = resolveProductModelSource(product.modelUrl, product.sku, customGlb);
-  const show3dStage = viewMode === '3d' && activeModel !== null;
+  const is3dMode = viewMode === '3d';
   const currentSrc = product.images[imgIdx];
   const reducedMotion =
     typeof window !== 'undefined' &&
@@ -137,6 +142,13 @@ export function LoupeModal({ product, onClose, onAdd }: LoupeModalProps) {
     }
   };
 
+  const handleToggle2d3d = () => {
+    soundEngine.playZoom(!is3dMode);
+    handlePointerLeave();
+    setMobileZoom(false);
+    setViewMode((prev) => toggleLoupeViewMode(prev));
+  };
+
   return (
     <div
       role="dialog"
@@ -157,23 +169,23 @@ export function LoupeModal({ product, onClose, onAdd }: LoupeModalProps) {
           <X className="w-4 h-4" aria-hidden="true" />
         </button>
 
-        {/* Left: 2.4x Editorial Loupe Stage (or real .GLB 360° Studio when available) */}
+        {/* Left: 2D Technical Loupe Stage OR 360° 3D OrbitControls Studio */}
         <div
           ref={stageRef}
-          onPointerMove={!show3dStage ? handlePointerMove : undefined}
-          onPointerLeave={!show3dStage ? handlePointerLeave : undefined}
-          onClick={!show3dStage ? handleStageClick : undefined}
+          onPointerMove={!is3dMode ? handlePointerMove : undefined}
+          onPointerLeave={!is3dMode ? handlePointerLeave : undefined}
+          onClick={!is3dMode ? handleStageClick : undefined}
           onDragOver={
-            !show3dStage
+            !is3dMode
               ? (e) => {
                   e.preventDefault();
                   setStageDragOver(true);
                 }
               : undefined
           }
-          onDragLeave={!show3dStage ? () => setStageDragOver(false) : undefined}
+          onDragLeave={!is3dMode ? () => setStageDragOver(false) : undefined}
           onDrop={
-            !show3dStage
+            !is3dMode
               ? (e) => {
                   e.preventDefault();
                   setStageDragOver(false);
@@ -182,11 +194,11 @@ export function LoupeModal({ product, onClose, onAdd }: LoupeModalProps) {
                 }
               : undefined
           }
-          className={`relative aspect-[4/5] bg-[#141417] overflow-hidden select-none ${
-            !show3dStage ? 'cursor-crosshair' : ''
+          className={`relative aspect-[4/5] bg-[#131316] overflow-hidden select-none ${
+            !is3dMode ? 'cursor-crosshair' : ''
           }`}
         >
-          {!show3dStage ? (
+          {!is3dMode ? (
             <>
               <img
                 src={currentSrc}
@@ -214,66 +226,68 @@ export function LoupeModal({ product, onClose, onAdd }: LoupeModalProps) {
             </>
           ) : (
             <GarmentStudio3D
-              modelUrl={activeModel.url}
-              modelLabel={activeModel.label}
-              isCustomUpload={activeModel.isCustomUpload}
+              modelUrl={activeModel?.url ?? null}
+              modelLabel={activeModel?.label ?? null}
+              productName={product.name}
+              isCustomUpload={activeModel?.isCustomUpload ?? false}
               onUploadFile={handleGlbFile}
-              onClearCustom={() => {
-                revokeCustomGlb();
-                if (!product.modelUrl) setViewMode('image');
-              }}
+              onClearCustom={() => revokeCustomGlb()}
             />
           )}
 
+          {/* Bottom-right mode switcher: 2D photo tabs + clean 2D <-> 360° 3D toggle */}
           <div
-            className="absolute right-3 bottom-3 z-10 flex gap-1.5"
+            data-testid="loupe-view-switcher"
+            className="absolute right-3 bottom-3 z-10 flex items-center gap-1.5"
             onClick={(e) => e.stopPropagation()}
           >
-            {product.images.map((_, i) => {
-              const active = !show3dStage && i === imgIdx;
-              return (
-                <button
-                  key={i}
-                  type="button"
-                  aria-pressed={active}
-                  onClick={() => {
-                    soundEngine.playZoom(i === 1);
-                    setViewMode('image');
-                    setImgIdx(i);
-                    setMobileZoom(false);
-                  }}
-                  className={`min-h-[34px] px-2.5 border font-mono-tech text-[10px] uppercase whitespace-nowrap transition-colors ${
-                    active
-                      ? 'bg-white text-[#0a0a0a] border-white font-bold'
-                      : 'bg-[#0a0a0a]/90 text-white border-white/28 hover:border-white'
-                  }`}
-                >
-                  {product.viewLabels[i]}
-                </button>
-              );
-            })}
+            {!is3dMode &&
+              product.images.map((_, i) => {
+                const active = i === imgIdx;
+                return (
+                  <button
+                    key={i}
+                    type="button"
+                    aria-pressed={active}
+                    onClick={() => {
+                      soundEngine.playZoom(i === 1);
+                      setImgIdx(i);
+                      setMobileZoom(false);
+                    }}
+                    className={`min-h-[34px] px-2.5 border font-mono-tech text-[10px] uppercase whitespace-nowrap transition-colors ${
+                      active
+                        ? 'bg-white text-[#0a0a0a] border-white font-bold'
+                        : 'bg-[#0a0a0a]/90 text-white border-white/28 hover:border-white'
+                    }`}
+                  >
+                    {product.viewLabels[i]}
+                  </button>
+                );
+              })}
 
-            {/* Only render 360° 3D tab when a real .GLB/.GLTF asset is linked or loaded */}
-            {activeModel && (
-              <button
-                type="button"
-                data-testid="loupe-mode-3d"
-                aria-pressed={show3dStage}
-                onClick={() => {
-                  soundEngine.playZoom(true);
-                  handlePointerLeave();
-                  setViewMode('3d');
-                }}
-                className={`min-h-[34px] px-2.5 border font-mono-tech text-[10px] uppercase whitespace-nowrap inline-flex items-center gap-1 transition-colors ${
-                  show3dStage
-                    ? 'bg-[#d91e2a] text-white border-[#d91e2a] font-bold'
-                    : 'bg-[#0a0a0a]/90 text-white border-white/28 hover:border-white'
-                }`}
-              >
-                <Box className="w-3 h-3" aria-hidden="true" />
-                <span>360° 3D</span>
-              </button>
-            )}
+            <button
+              type="button"
+              data-testid="loupe-mode-toggle"
+              aria-pressed={is3dMode}
+              onClick={handleToggle2d3d}
+              className={`min-h-[34px] px-2.5 border font-mono-tech text-[10px] uppercase whitespace-nowrap inline-flex items-center gap-1.5 transition-colors ${
+                is3dMode
+                  ? 'bg-white text-[#0a0a0a] border-white font-bold hover:bg-[#f4f4f5]'
+                  : 'bg-[#0a0a0a]/92 text-white border-[#d91e2a]/80 hover:bg-[#d91e2a] hover:border-[#d91e2a] font-bold'
+              }`}
+            >
+              {is3dMode ? (
+                <>
+                  <ImageIcon className="w-3 h-3" aria-hidden="true" />
+                  <span>Vista 2D</span>
+                </>
+              ) : (
+                <>
+                  <Box className="w-3 h-3 text-[#ff4d58]" aria-hidden="true" />
+                  <span>360° 3D</span>
+                </>
+              )}
+            </button>
           </div>
         </div>
 
@@ -315,7 +329,7 @@ export function LoupeModal({ product, onClose, onAdd }: LoupeModalProps) {
                   soundEngine.playPop();
                   glbInputRef.current?.click();
                 }}
-                title="Previsualizá un escaneo .GLB real de esta prenda"
+                title="Cargar un escaneo .GLB real de esta prenda"
                 className="shrink-0 px-2 py-1 border border-white/16 text-[#a1a1aa] hover:text-white hover:border-white/50 font-mono-tech text-[9.5px] tracking-[0.1em] uppercase inline-flex items-center gap-1 transition-colors"
               >
                 <Upload className="w-3 h-3" aria-hidden="true" />
