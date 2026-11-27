@@ -1,0 +1,6 @@
+{
+  "name": "OSSK TANDIL — Runway & Catálogo",
+  "description": "Seis looks completos de Ossk Tandil. Girá la pasarela 3D, aislá el outfit con pines interactivos, inspeccioná cada prenda con lupa 2.4x y armá tu pedido para Rodríguez 743.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
