@@ -9,6 +9,7 @@ import { OsskGameOverlay } from './components/OsskGameOverlay';
 import { LoupeModal } from './components/LoupeModal';
 import { OrderDrawer } from './components/OrderDrawer';
 import { StoreFooter } from './components/StoreFooter';
+import { PreloaderCurtain } from './components/PreloaderCurtain';
 import type { AddItemEntry, OsskRunwayElement } from './components/osskRunwayElement';
 import {
   computeOrderTotals,
@@ -227,6 +228,7 @@ export default function App() {
 
   return (
     <div id="top" className="min-h-screen bg-white text-[#151413]">
+      <PreloaderCurtain />
       {mapsQuotaExceeded && (
         <div className="bg-amber-50 border-b border-amber-200 text-amber-900 px-4 py-2.5 text-xs md:text-sm text-center sticky top-0 z-50 shadow-sm">
           <span>

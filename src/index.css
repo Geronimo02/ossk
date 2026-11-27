@@ -1885,6 +1885,30 @@ ossk-runway.rw--zoom .rw__lb .rw__pin-callout {
   transform: translate3d(0, 0, 0);
 }
 
+/* ======================== EDITORIAL PRELOADER CURTAIN ======================== */
+.ossk-preloader {
+  transform: translate3d(0, 0, 0);
+  will-change: transform;
+  transition: transform 720ms var(--rw-ease-silk);
+}
+
+.ossk-preloader.is-exiting {
+  transform: translate3d(0, -100%, 0);
+}
+
+.ossk-preloader-inner {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+  transition:
+    opacity 320ms var(--rw-ease-silk),
+    transform 480ms var(--rw-ease-silk);
+}
+
+.ossk-preloader.is-exiting .ossk-preloader-inner {
+  opacity: 0;
+  transform: translate3d(0, -18px, 0);
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
